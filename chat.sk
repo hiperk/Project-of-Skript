@@ -1,0 +1,226 @@
+options:
+	tag: &3HKCore&e&l>
+on script load:
+	OnLoad()
+	LoadConfig()
+variables:
+	{chat} = true
+	{chat::%player%} = 0
+	{automsg::timer} = 5
+	{update} = true
+function OnLoad():
+	if folder "plugins/HK-Chat" doesn't exists:
+		send "&6[&3HKCore&6]&cNie odnaleziono folderu HK-Chat" to console
+		send "&6[&3HKCore&6]&aTworzenie..." to console
+		create folder "plugins/HK-Chat"
+		send "&6[&3HKCore&6]&aFolder HK-Chat zostal pomyslnie stworzony" to console
+	if file "plugins/HK-Chat/config.yml" doesn't exists:
+		send "&6[&3HKCore&6]&cNie odnaleziono pliku config.yml" to console
+		send "&6[&3HKCore&6]&aTworzenie..." to console
+		create file "plugins/HK-Chat/config.yml"
+		download from "https://raw.githubusercontent.com/hiperk/skript/master/config.yml" to "plugins/HK-Chat/config.yml"
+		send "&6[&3HKCore&6]&aPlik config zostal pomyslnie stworzony" to console
+function LoadConfig():
+	set {ctag} to colored single value "TAG" get of "plugins/HK-Chat/config.yml"
+	set {slowmode} to yaml value "SLOWMODE-ENABLE" from "plugins/HK-Chat/config.yml"
+	set {slowmodetime} to single value "SLOWMODE-TIME" get of "plugins/HK-Chat/config.yml" parsed as integer
+	set {automsg::time} to single value "AutoMessgae-Time" get of "plugins/HK-Chat/config.yml" parsed as integer
+	set {automsg::enable} to yaml value "AutoMessage-Enable" from "plugins/HK-Chat/config.yml"
+	set {update} to yaml value "AutoUpDate" from "plugins/HK-Chat/config.yml"
+	set {yver} to single value "Version" get of "plugins/HK-Chat/config.yml"
+function ChatOn(p: player):
+	if {chat} is false:
+		set {chat} to true
+		set {CReson} to false
+		set {_fun::on::*} to yaml list "CHAT-VIEW-ON" from file "plugins/HK-Chat/config.yml"
+		replace all "(NICK)" with "%{_p}%" in {_fun::on::*}
+		replace all "(TAG)" with "%{ctag}%" in {_fun::on::*}
+		loop all players:
+			loop {_fun::on::*}:
+				send "%loop-value-2%" to loop-player
+		stop
+	if {chat} is true:
+		send "{@tag} &cChat jest akutalnie &a&lWlaczony" to {_p}
+function ChatOff(p: player):
+	if {chat} is true:
+		set {chat} to false
+		set {_fun::off::*} to yaml list "CHAT-VIEW-OFF" from file "plugins/HK-Chat/config.yml"
+		replace all "(NICK)" with "%{_p}%" in {_fun::off::*}
+		replace all "(TAG)" with "%{ctag}%" in {_fun::off::*}
+		loop all players:
+			loop {_fun::off::*}:
+				send "%loop-value-2%" to loop-player
+		stop
+	if {chat} is false:
+		send "{@tag} &cChat jest akutalnie &4&lWylaczony" to {_p}
+function ChatOffReson(p: player, t: text) :: text:
+	if {_t} is set:
+		if {chat} is true:
+			set {chat} to false
+			set {CReson} to true
+			set {Chat::Reson} to {_t}
+			set {_fun::offr::*} to yaml list "CHAT-VIEW-OFF-RESON" from file "plugins/HK-Chat/config.yml"
+			replace all "(NICK)" with "%{_p}%" in {_fun::offr::*}
+			replace all "(TAG)" with "%{ctag}%" in {_fun::offr::*}
+			replace all "(POWOD)" with "%{Chat::Reson}%" in {_fun::offr::*}
+			loop all players:
+				loop {_fun::offr::*}:
+					send "%loop-value-2%" to loop-player
+			stop
+	if {chat} is false:
+		send "{@tag} &cChat jest akutalnie &4&lWylaczony &7(Powod: %{Chat::Reson}%)" to {_p}
+function Clear(p: player):
+	loop all players:
+		set {_fun::clear::*} to yaml list "CHAT-VIEW-CLEAR" from file "plugins/HK-Chat/config.yml"
+		replace all "(NICK)" with "%{_p}%" in {_fun::clear::*}
+		replace all "(TAG)" with "%{ctag}%" in {_fun::clear::*}
+		loop 150 times:
+			send "     " to loop-player
+		loop {_fun::clear::*}:
+			send "%loop-value-2%" to loop-player
+function AutoMessage():
+	if {automsg::timer} < 1:
+		if {msgadds} is not set:
+			set {msgadds} to 1
+		loop 50 times:
+			set {_msg::%loop-number%::*} to yaml list "AutoMessgae.%loop-number%" from file "plugins/HK-Chat/config.yml"
+		set {automsg::timer} to {automsg::time}
+		loop all players:
+			replace all "(NICK)" with "%loop-player%" in {_msg::%{msgadds}%::*}
+			replace all "(TAG)" with "%{ctag}%" in {_msg::%{msgadds}%::*}
+			replace all "(CZAS)" with "%now%" in {_msg::%{msgadds}%::*}
+			replace all "(ONLINE)" with "%number of all players%" in {_msg::%{msgadds}%::*}
+			loop {_msg::%{msgadds}%::*}:
+				send "%loop-value-2%" to loop-player
+		add 1 to {msgadds}
+		if {_msg::%{msgadds}%::*} is set:
+			stop
+		else:
+			set {msgadds} to 1
+function AutoMessageToggle(p: player):
+	if {automsg::enable} is true:
+		set {automsg::enable} to false
+		send "{@tag} &7AutoMessage zostal &cWylaczony" to {_p}
+		stop
+	if {automsg::enable} is false:
+		set {automsg::enable} to true
+		send "{@tag} &7AutoMessage zostal &aWlaczony" to {_p}
+		stop
+function SlowModeToggle(p: player):
+	if {slowmode} is true:
+		set {slowmode} to false
+		send "{@tag} &7SlowMode zostal &cWylaczony" to {_p}
+		stop
+	if {slowmode} is false:
+		set {slowmode} to true
+		send "{@tag} &7SlowMode zostal &aWlaczony" to {_p}
+		stop
+function AutoUpDate(p: player):
+	set {_newVersion} to result of connect to "https://raw.githubusercontent.com/hiperk/skript/master/wersja.txt"
+	if {update} is true:
+		if {yver} is {_newVersion}:
+			send "&8======================" to {_p}
+			send "{@tag} &7Masz aktualna wersje HK-Chat &a%{_newVersion}%" to {_p}
+			send "&8======================" to {_p}
+		else:
+			send "{@tag} &cMasz stara wersje HK-Chat &7%{yver}% &cnajnowsza wersja to &7%{_newVersion}%" to {_p}
+function Help(p: player):
+	set {_chelp::*} to yaml list "Description-Help" from file "plugins/HK-Chat/config.yml"
+	replace all "(TAG)" with "%{ctag}%" in {_chelp::*}
+	replace all "(VER)" with "%{yver}%" in {_chelp::*}
+	if {chat} is true:
+		replace all "(SC)" with "&aWlaczony" in {_chelp::*}
+		replace all "(SCR)" with "" in {_chelp::*}
+	if {chat} is false:
+		if {CReson} is true:
+			replace all "(SC)" with "&cWylaczony" in {_chelp::*}
+			replace all "(SCR)" with "Powod: &c%{Chat::Reson}%" in {_chelp::*}
+		else:
+			replace all "(SCR)" with "" in {_chelp::*}
+			replace all "(SC)" with "&cWylaczony" in {_chelp::*}
+	if {slowmode} is true:
+		replace all "(SM)" with "&aWlaczony" in {_chelp::*}
+	if {slowmode} is false:
+		replace all "(SM)" with "&cWylaczony" in {_chelp::*}
+	if {automsg::enable} is true:
+		replace all "(AM)" with "&aWlaczony" in {_chelp::*}
+	if {automsg::enable} is false:
+		replace all "(AM)" with "&cWylaczony" in {_chelp::*}
+	loop {_chelp::*}:
+		send "%loop-value%" to {_p}
+function ReloadHKChat(p: player):
+	LoadConfig()
+	OnLoad()
+	send "{@tag} &aHK-Chat zostal pomyslnie przeladowany" to {_p}
+command /chat [<text>] [<text>]:
+	aliases: hcat, czat
+	trigger:
+		if arg 1 is not set:
+			Help(player)
+		if arg 1 is "on":
+			if player has permission "chat.admin.on":
+				ChatOn(player)
+			else:
+				send "&cNie masz uprawnien do tej komendy &7(chat.admin.on)"
+		if arg 1 is "off":
+			if player has permission "chat.admin.off":
+				if arg 2 is set:
+					ChatOffReson(player, arg 2)
+				else:
+					ChatOff(player)
+			else:
+				send "&cNie masz uprawnien do tej komendy &7(chat.admin.off)"
+		if arg 1 is "clear" or "cc" or "cclear":
+			if player has permission "chat.admin.clear":
+				Clear(player)
+			else:
+				send "&cNie masz uprawnien do tej komendy &7(chat.admin.clear)"
+		if arg 1 is "AutoMessage" or "automsg" or "amsg":
+			if player has permission "chat.admin.toggle.automessage":
+				AutoMessageToggle(player)
+			else:
+				send "&cNie masz uprawnien do tej komendy &7(chat.admin.toggle.automessage)"
+		if arg 1 is "slowmode" or "sm":
+			if player has permission "chat.admin.toggle.slowmode":
+				SlowModeToggle(player)
+			else:
+				send "&cNie masz uprawnien do tej komendy &7(chat.admin.toggle.slowmode)"
+		if arg 1 is "reload":
+			if player has permission "chat.admin.relaod":
+				ReloadHKChat(player)
+			else:
+				send "&cNie masz uprawnien do tej komendy &7(chat.admin.relaod)"
+		if arg 1 is "update" or "ver":
+			if player has permission "chat.admin.update":
+				AutoUpDate(player)
+			else:
+				send "&cNie masz uprawnien do tej komendy &7(chat.admin.update)"
+on chat:
+	if {chat} is false:
+		if player don't have permission "chat.say":
+			cancel event
+			if {CReson} is true:
+				send "{@tag} &cChat zostal wylaczony &7(Powód: %{Chat::Reson}%)"
+			else:
+				send "{@tag} &cChat zostal wylaczony"
+	if {chat} is true:
+		if {slowmode} is true:
+			if player don't have permission "chat.slowmode":
+				if {chat::%player%} < 1:
+					set {chat::%player%} to {slowmodetime}
+					stop
+				if {chat::%player%} > 0:
+					send "&8> &6Nastepna wiadomosc bedziesz mogl wyslac za: &c%{chat::%player%}% &6sekund!"
+					cancel event
+				else:	 
+					if {chat::%player%} < 1:
+						set {chat::%player%} to {slowmodetime}
+						stop
+every 1 seconds:
+	if {automsg::enable} is true:
+		remove 1 from {automsg::timer}
+	if {slowmode} is true:
+		loop all players:
+			remove 1 from {chat::%loop-player%}
+	if {automsg::enable} is true:
+		AutoMessage()
