@@ -18,7 +18,7 @@ function OnLoad():
 		send "&6[&3HKCore&6]&cNie odnaleziono pliku config.yml" to console
 		send "&6[&3HKCore&6]&aTworzenie..." to console
 		create file "plugins/HK-Chat/config.yml"
-		download from "https://raw.githubusercontent.com/hiperk/skript/master/config.yml" to "plugins/HK-Chat/config.yml"
+		download from "https://raw.githubusercontent.com/hiperk/Project-of-Skript/master/config.yml" to "plugins/HK-Chat/config.yml"
 		send "&6[&3HKCore&6]&aPlik config zostal pomyslnie stworzony" to console
 function LoadConfig():
 	set {ctag} to colored single value "TAG" get of "plugins/HK-Chat/config.yml"
@@ -116,7 +116,7 @@ function SlowModeToggle(p: player):
 		send "{@tag} &7SlowMode zostal &aWlaczony" to {_p}
 		stop
 function AutoUpDate(p: player):
-	set {_newVersion} to result of connect to "https://raw.githubusercontent.com/hiperk/skript/master/wersja.txt"
+	set {_newVersion} to result of connect to "https://raw.githubusercontent.com/hiperk/Project-of-Skript/master/wersja"
 	if {update} is true:
 		if {yver} is {_newVersion}:
 			send "&8======================" to {_p}
