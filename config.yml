@@ -1,5 +1,5 @@
 # Version - Nie dotykac jest to ptrzebne do prawidłowego działania.
-Version: dev5
+Version: dev2
 # AutoUpDate - Czy włączyć automatyczne sprawdzanie aktualizacji
 # True: TAK False: NIE
 # Domyślnie: True
@@ -7,7 +7,7 @@ Version: dev5
 AutoUpDate: true
 # TAG - Ustawiasz tag jaki będzie wyświetlany
 # Podczas zmiennej (TAG), tylko w configu.
-TAG: '&eHKCore'
+TAG: '&aHK-CHAT'
 # SLOWMODE-ENABLE - Czy właczyć slowmode na chat
 # Co robi slowmode? Zapobiega spamowi na chat
 # Gracz może wysłać 1 wiadomość co kilka sekund
@@ -16,8 +16,10 @@ TAG: '&eHKCore'
 SLOWMODE-ENABLE: false
 # SLOWMODE-TIME - Co jaki czas gracz może wysłać wiadomość jedna po drugiej
 # Domyślnie: 5s
-SLOWMODE-TIME: '5s'
+SLOWMODE-TIME: '5'
+Help-For-Everyone: true
 # Description-Help - Po wpisaniu komendy /chat wyświetli się poniższe komendy
+# Jeśli jest na false to uprawnienie do tej komendy to: chat.help
 # Zmienne:
 # (TAG) - Wyświetla tag który ustawiliśmy w górnej części configu.
 # (SC) - Wyświetla Status chatu czy jest Włączony/Wyłączony.
@@ -31,55 +33,76 @@ Description-Help:
 - ' '
 - '                                 &1[(TAG)&1]'
 - ' '
+- '&1&l» &7/chat on &1- &cWlacza chat'
+- '&1&l» &7/chat off &1- &cWylacza chat'
+- '&1&l» &7/chat off &c<&7Powod&c> &1- &cWylacza chat z powodem'
+- '&1&l» &7/chat offt &c<&7Czas&c> &1- &cWylacza chat na czas'
+- '&1&l» &7/chat cc &1- &cCzysci chat'
+- '&1&l» &7/chat rb &1- &cWlacza lub wylacza kolorowy nick'
+- '&1&l» &7/chat slowmode &1- &cWlacza lub wylacza slowmode'
+- '&1&l» &7/chat automsg &1- &cWlacza lub wylacza automessgae'
+- '&1&l» &7/chat update &1- &cSprawdza czy jest nowa aktualizacja'
+- '&1&l» &7/chat reload &1- &cPrzeladowuje pliki'
+- ' '
 - '&7Chat: (SC) &7(SCR)'
 - '&7Slowmode: (SM)'
 - '&7Automessage: (AM)'
 - '&7Wersja HK-Chat: &a(VER)'
-- ' '
-- '&1> &7/chat on &1- &cWlacza chat'
-- '&1> &7/chat off &1- &cWylacza chat'
-- '&1> &7/chat off &c<&7Powod&c> &1- &cWylacza chat z powodem'
-- '&1> &7/chat cc &1- &cCzysci chat'
-- '&1> &7/chat slowmode &1- &cWlacza lub wylacza slowmode'
-- '&1> &7/chat automsg &1- &cWlacza lub wylacza automessgae'
-- '&1> &7/chat update &1- &cSprawdza czy jest nowa aktualizacja'
-- '&1> &7/chat reload &1- &cPrzeladowuje pliki'
 - ' '
 - '&8&m------------------------------'
 # CHAT-VIEW-ON - Ustawienia wiadomości po wpisaniu /chat on
 # Zmienne: (TAG), (NICK) - Zamienia na nick gracza który wpisał komendę
 CHAT-VIEW-ON:
 - ' '
-- '                    &e&l<(TAG)&e&l>'
-- '&7Chat zostal &aWLACZONY &7przez &3(NICK)'
+- '                             &1&l<(TAG)&1&l>'
+- ' '
+- '            &7Chat zostal &2WLACZONY &7przez &a(NICK)'
+- ' '
 - ' '
 # CHAT-VIEW-Off - Ustawienia wiadomości po wpisaniu /chat off
 # Zmienne: (TAG), (NICK) - Zamienia na nick gracza który wpisał komendę
 CHAT-VIEW-OFF:
 - ' '
-- '                    &e&l<(TAG)&e&l>'
-- '&7Chat zostal &cWYLACZONY &7przez &3(NICK)'
+- '                             &1&l<(TAG)&1&l>'
+- ' '
+- '            &7Chat zostal &4WYLACZONY &7przez &a(NICK)'
+- ' '
 - ' '
 # CHAT-VIEW-OFF-RESON - Ustawienia wiadomości po wpisaniu /chat off <Powód>
 # Zmienne: (TAG), (POWOD) - Zamienia na powod jaki wpisalsmy, (NICK) - Zamienia na nick gracza który wpisał komendę
 CHAT-VIEW-OFF-RESON:
 - ' '
-- '                    &e&l<(TAG)&e&l>'
-- '&7Chat zostal &cWYLACZONY &7przez &3(NICK)'
-- '&7Powod: &a(POWOD)'
+- '                             &1&l<(TAG)&1&l>'
+- ' '
+- '            &7Chat zostal &4WYLACZONY &7przez &a(NICK)'
+- '            &7Powod: &c(POWOD)'
+- ' '
+- ' '
+- ' '
+# CHAT-VIEW-OFF-TIME - Ustawienia wiadomości po wpisaniu /chat offt <Czas>
+# Zmienne: (TAG), (TIME) - Zamienia na czas jakie wpisalismy, (NICK) - Zamienia na nick gracza który wpisał komendę
+CHAT-VIEW-OFF-TIME:
+- ' '
+- '                             &1&l<(TAG)&1&l>'
+- ' '
+- '            &7Chat zostal &4WYLACZONY &7przez &a(NICK)'
+- '            &7Na czas: &c(TIME)'
+- ' '
 - ' '
 # CHAT-VIEW-CLEAR - Ustawienia wiadomości po wpisaniu /chat clear
 # Zmienne: (TAG), (NICK) - Zamienia na nick gracza który wpisał komendę
 CHAT-VIEW-CLEAR:
 - ' '
-- '                    &e&l<(TAG)&e&l>'
+- '                             &1&l<(TAG)&1&l>'
 - ' '
-- '&7Chat zostal &6WYCZYSZCZONY &7przez &3(NICK)'
+- '          &7Chat zostal &6WYCZYSZCZONY &7przez &a(NICK)'
+- ' '
+- ' '
 - ' '
 # AutoMessgae-Enable - Czy automessage ma być cały czas włączony
 # True: TAK false: NIE
 # Można zmienic za pomocą komendy podczas gry.
-AutoMessgae-Enable: false
+AutoMessgae-Enable: true
 # AutoMessgae-Time - Co ile mają nam się wyświetlać wiadomości.
 # Podajemy tylko w sekundach.
 AutoMessgae-Time: 30
@@ -87,9 +110,7 @@ AutoMessgae-Time: 30
 # Aby dodać kolejne ogłoszenie wpisujemy kolejne liczby np. 2,3,4,5,6,7,8,9,10 itd.
 AutoMessgae:
   1: 
-  - ''
   - '&7Aby zmienic wiadomosc wejdz w &a/plugins/HK-Chat/config.yml'
-  - ''
   2:
   - '&7Aby zmienic wiadomosc wejdz w &c/plugins/HK-Chat/config.yml'
   3:
