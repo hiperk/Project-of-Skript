@@ -1,13 +1,19 @@
 options:
-	tag: &3HKCore&e&l>
+	tag: &9HK-Chat&8&l>
 on script load:
 	OnLoad()
 	LoadConfig()
+on script unload:
+	UnLoad()
 variables:
 	{chat} = true
 	{chat::%player%} = 0
 	{automsg::timer} = 5
 	{update} = true
+	{automsg::enable} = false
+	{slowmode} = false
+	{rainbow} = false
+	{rainbow::%player%} = false
 function OnLoad():
 	if folder "plugins/HK-Chat" doesn't exists:
 		send "&6[&3HKCore&6]&cNie odnaleziono folderu HK-Chat" to console
@@ -28,6 +34,9 @@ function LoadConfig():
 	set {automsg::enable} to yaml value "AutoMessage-Enable" from "plugins/HK-Chat/config.yml"
 	set {update} to yaml value "AutoUpDate" from "plugins/HK-Chat/config.yml"
 	set {yver} to single value "Version" get of "plugins/HK-Chat/config.yml"
+	set {chelpperm} to yaml value "Help-For-Everyone" from "plugins/HK-Chat/config.yml"
+function UnLoad():
+	delete {automsg::enable}
 function ChatOn(p: player):
 	if {chat} is false:
 		set {chat} to true
@@ -35,18 +44,20 @@ function ChatOn(p: player):
 		set {_fun::on::*} to yaml list "CHAT-VIEW-ON" from file "plugins/HK-Chat/config.yml"
 		replace all "(NICK)" with "%{_p}%" in {_fun::on::*}
 		replace all "(TAG)" with "%{ctag}%" in {_fun::on::*}
+		replace all "<none>" with "Console" in {_fun::on::*}
 		loop all players:
 			loop {_fun::on::*}:
 				send "%loop-value-2%" to loop-player
 		stop
 	if {chat} is true:
-		send "{@tag} &cChat jest akutalnie &a&lWlaczony" to {_p}
+		send "{@tag} &8[&a&l✓&8] &cChat jest akutalnie &a&lWlaczony" to {_p}
 function ChatOff(p: player):
 	if {chat} is true:
 		set {chat} to false
 		set {_fun::off::*} to yaml list "CHAT-VIEW-OFF" from file "plugins/HK-Chat/config.yml"
 		replace all "(NICK)" with "%{_p}%" in {_fun::off::*}
 		replace all "(TAG)" with "%{ctag}%" in {_fun::off::*}
+		replace all "<none>" with "Console" in {_fun::off::*}
 		loop all players:
 			loop {_fun::off::*}:
 				send "%loop-value-2%" to loop-player
@@ -63,17 +74,42 @@ function ChatOffReson(p: player, t: text) :: text:
 			replace all "(NICK)" with "%{_p}%" in {_fun::offr::*}
 			replace all "(TAG)" with "%{ctag}%" in {_fun::offr::*}
 			replace all "(POWOD)" with "%{Chat::Reson}%" in {_fun::offr::*}
+			replace all "<none>" with "Console" in {_fun::offr::*}
 			loop all players:
 				loop {_fun::offr::*}:
 					send "%loop-value-2%" to loop-player
 			stop
 	if {chat} is false:
 		send "{@tag} &cChat jest akutalnie &4&lWylaczony &7(Powod: %{Chat::Reson}%)" to {_p}
+function ChatOFFTime(p: player, c: text):
+	set {_fun::offt::*} to yaml list "CHAT-VIEW-OFF-TIME" from file "plugins/HK-Chat/config.yml"
+	set {_time} to {_c} parsed as integer
+	if {chat} is true:
+		replace all "(TAG)" with "%{ctag}%" in {_fun::offt::*}
+		replace all "(NICK)" with "%{_p}%" in {_fun::offt::*}
+		replace all "(TIME)" with "%{_time}%" in {_fun::offt::*}
+		set {chat} to false
+		loop {_fun::offt::*}:
+			send "%loop-value%" to all players
+		loop {_time} times:
+			if {chat} is true:
+				exit loop
+			if {_time} > 1:
+				wait 1 second
+				remove 1 from {_time}
+				send action bar from "&1&l&k|| &3Chat zostanie &aWlaczony &3za: &6%{_time}%&3s&1&l&k|||" to {_p}
+				if {_time} = 1:
+					wait 1 second
+					ChatOn({_p})
+					stop
+	else:
+		send "&cChat jest akutalnie &4&lWylaczony" to {_p}
 function Clear(p: player):
 	loop all players:
 		set {_fun::clear::*} to yaml list "CHAT-VIEW-CLEAR" from file "plugins/HK-Chat/config.yml"
 		replace all "(NICK)" with "%{_p}%" in {_fun::clear::*}
 		replace all "(TAG)" with "%{ctag}%" in {_fun::clear::*}
+		replace all "<none>" with "Console" in {_fun::clear::*}
 		loop 150 times:
 			send "     " to loop-player
 		loop {_fun::clear::*}:
@@ -119,40 +155,50 @@ function AutoUpDate(p: player):
 	set {_newVersion} to result of connect to "https://raw.githubusercontent.com/hiperk/Project-of-Skript/master/wersja"
 	if {update} is true:
 		if {yver} is {_newVersion}:
-			send "&8======================" to {_p}
-			send "{@tag} &7Masz aktualna wersje HK-Chat &a%{_newVersion}%" to {_p}
-			send "&8======================" to {_p}
+			send " " to {_p}
+			send "&2&m--------------------------------------------" to {_p}
+			send "{@tag} &8[&a&l✓&8] &7Masz aktualna wersje HK-Chat &a%{_newVersion}% &8[&a&l✓&8]" to {_p}
+			send "&2&m--------------------------------------------" to {_p}
+			send " " to {_p}
 		else:
-			send "{@tag} &cMasz stara wersje HK-Chat &7%{yver}% &cnajnowsza wersja to &7%{_newVersion}%" to {_p}
+			send " " to {_p}
+			send "&4&m--------------------------------------------" to {_p}
+			send "{@tag} &8[&4&l✗&8] &cMasz stara wersje HK-Chat &7%{yver}% &cnajnowsza wersja to &7%{_newVersion}% &8[&4&l✗&8]" to {_p}
+			send "&4&m--------------------------------------------" to {_p}
+			send " " to {_p}
 function Help(p: player):
-	set {_chelp::*} to yaml list "Description-Help" from file "plugins/HK-Chat/config.yml"
-	replace all "(TAG)" with "%{ctag}%" in {_chelp::*}
-	replace all "(VER)" with "%{yver}%" in {_chelp::*}
-	if {chat} is true:
-		replace all "(SC)" with "&aWlaczony" in {_chelp::*}
-		replace all "(SCR)" with "" in {_chelp::*}
-	if {chat} is false:
-		if {CReson} is true:
-			replace all "(SC)" with "&cWylaczony" in {_chelp::*}
-			replace all "(SCR)" with "Powod: &c%{Chat::Reson}%" in {_chelp::*}
-		else:
+	if {chelpperm} is true:
+		set {_chelp::*} to yaml list "Description-Help" from file "plugins/HK-Chat/config.yml"
+		replace all "(TAG)" with "%{ctag}%" in {_chelp::*}
+		replace all "(VER)" with "%{yver}%" in {_chelp::*}
+		if {chat} is true:
+			replace all "(SC)" with "&aWlaczony" in {_chelp::*}
 			replace all "(SCR)" with "" in {_chelp::*}
-			replace all "(SC)" with "&cWylaczony" in {_chelp::*}
-	if {slowmode} is true:
-		replace all "(SM)" with "&aWlaczony" in {_chelp::*}
-	if {slowmode} is false:
-		replace all "(SM)" with "&cWylaczony" in {_chelp::*}
-	if {automsg::enable} is true:
-		replace all "(AM)" with "&aWlaczony" in {_chelp::*}
-	if {automsg::enable} is false:
-		replace all "(AM)" with "&cWylaczony" in {_chelp::*}
-	loop {_chelp::*}:
-		send "%loop-value%" to {_p}
+		if {chat} is false:
+			if {CReson} is true:
+				replace all "(SC)" with "&cWylaczony" in {_chelp::*}
+				replace all "(SCR)" with "Powod: &c%{Chat::Reson}%" in {_chelp::*}
+			else:
+				replace all "(SCR)" with "" in {_chelp::*}
+				replace all "(SC)" with "&cWylaczony" in {_chelp::*}
+		if {slowmode} is true:
+			replace all "(SM)" with "&aWlaczony" in {_chelp::*}
+		if {slowmode} is false:
+			replace all "(SM)" with "&cWylaczony" in {_chelp::*}
+		if {automsg::enable} is true:
+			replace all "(AM)" with "&aWlaczony" in {_chelp::*}
+		if {automsg::enable} is false:
+			replace all "(AM)" with "&cWylaczony" in {_chelp::*}
+		loop {_chelp::*}:
+			send "%loop-value%" to {_p}
+	else:
+		if {_p} don't have permission "chat.help":
+			send "&8[&4&l✗&8] &cNie masz uprawnien do tej komendy &7(chat.help)" to {_p}
 function ReloadHKChat(p: player):
 	LoadConfig()
 	OnLoad()
 	send "{@tag} &aHK-Chat zostal pomyslnie przeladowany" to {_p}
-command /chat [<text>] [<text>]:
+command /chat [<text>] [<text>] [<integer>]:
 	aliases: hcat, czat
 	trigger:
 		if arg 1 is not set:
@@ -169,7 +215,7 @@ command /chat [<text>] [<text>]:
 				else:
 					ChatOff(player)
 			else:
-				send "&cNie masz uprawnien do tej komendy &7(chat.admin.off)"
+				send "&8[&4&l✗&8] &cNie masz uprawnien do tej komendy &7(chat.admin.off)"
 		if arg 1 is "clear" or "cc" or "cclear":
 			if player has permission "chat.admin.clear":
 				Clear(player)
@@ -179,22 +225,43 @@ command /chat [<text>] [<text>]:
 			if player has permission "chat.admin.toggle.automessage":
 				AutoMessageToggle(player)
 			else:
-				send "&cNie masz uprawnien do tej komendy &7(chat.admin.toggle.automessage)"
+				send "&8[&4&l✗&8] &cNie masz uprawnien do tej komendy &7(chat.admin.toggle.automessage)"
 		if arg 1 is "slowmode" or "sm":
 			if player has permission "chat.admin.toggle.slowmode":
 				SlowModeToggle(player)
 			else:
-				send "&cNie masz uprawnien do tej komendy &7(chat.admin.toggle.slowmode)"
+				send "&8[&4&l✗&8] &cNie masz uprawnien do tej komendy &7(chat.admin.toggle.slowmode)"
 		if arg 1 is "reload":
 			if player has permission "chat.admin.relaod":
 				ReloadHKChat(player)
 			else:
-				send "&cNie masz uprawnien do tej komendy &7(chat.admin.relaod)"
+				send "&8[&4&l✗&8] &cNie masz uprawnien do tej komendy &7(chat.admin.relaod)"
 		if arg 1 is "update" or "ver":
 			if player has permission "chat.admin.update":
 				AutoUpDate(player)
 			else:
-				send "&cNie masz uprawnien do tej komendy &7(chat.admin.update)"
+				send "&8[&4&l✗&8] &cNie masz uprawnien do tej komendy &7(chat.admin.update)"
+		if arg 1 is "rainbow" or "rb":
+			if player has permission "chat.rainbow":
+				if {rainbow::%player%} is false:
+					set {rainbow::%player%} to true
+					send "{@tag} &aWlaczyles teczowy nick"
+					stop
+				if {rainbow::%player%} is true:
+					set {rainbow::%player%} to false
+					send "{@tag} &cWylaczyles teczowy nick"
+					stop
+		if arg 1 is "offt":
+			if player has permission "chat.admin.offtime":
+				if arg 2 is set:
+					if arg 2 contain "0" or "1" or "2" or "3" or "4" or "5" or "6" or "7" or "8" or "9":
+						ChatOFFTime(player, arg 2)
+					else:
+						send "&8[&4&l✗&8] &cNie mozesz wpisac tego argumentu uzyj samych liczb."
+				else:
+					send "&8[&4&l✗&8] &cUzyj: &7/chat offt &c<&7czas w sekundach&c>"
+			else:
+				send "&8[&4&l✗&8] &cNie masz uprawnien do tej komendy &7(chat.admin.offtime)"
 on chat:
 	if {chat} is false:
 		if player don't have permission "chat.say":
@@ -210,12 +277,30 @@ on chat:
 					set {chat::%player%} to {slowmodetime}
 					stop
 				if {chat::%player%} > 0:
-					send "&8> &6Nastepna wiadomosc bedziesz mogl wyslac za: &c%{chat::%player%}% &6sekund!"
+					send "&8[&4&l✗&8] &cNastepna wiadomosc bedziesz mogl wyslac za: &7%{chat::%player%}% &csekund!"
 					cancel event
 				else:	 
 					if {chat::%player%} < 1:
 						set {chat::%player%} to {slowmodetime}
 						stop
+	if {rainbow::%player%} is true:
+		set {_n} to player's name
+		set {_l} to length of {_n}
+		set {_s} to ""
+		loop {_l} times:
+			set {_i} to {_l} - (loop-number)
+			set {_i} to {_i} + 1
+			set {_k::%{_i}%} to last character of {_n}
+			set {_n} to {_i}-1 first characters of {_n}
+		loop {_l} times:
+			set {_r} to "&a&l" or "&b&l" or "&c&l" or "&d&l" or "&e&l" or "&f&l" or "&2&l" or "&3&l" or "&5&l" or "&6&l" or "&7&l" or "&8&l" or "&9&l"
+			set {_s::%loop-number%} to colored "%{_r}%%{_k::%loop-number%}%"
+			set {_s} to "%{_s}%%{_s::%loop-number%}%"
+		set {_d} to player's display name
+		set {_p} to player's name
+		replace all "%{_p}%" with {_s} in {_d}
+		set player's display name to {_d}
+
 every 1 seconds:
 	if {automsg::enable} is true:
 		remove 1 from {automsg::timer}
