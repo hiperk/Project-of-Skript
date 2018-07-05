@@ -41,6 +41,8 @@ function ChatOn(p: player):
 	if {chat} is false:
 		set {chat} to true
 		set {CReson} to false
+		set {timer} to false
+		set {timerk} to false
 		set {_fun::on::*} to yaml list "CHAT-VIEW-ON" from file "plugins/HK-Chat/config.yml"
 		replace all "(NICK)" with "%{_p}%" in {_fun::on::*}
 		replace all "(TAG)" with "%{ctag}%" in {_fun::on::*}
@@ -83,27 +85,54 @@ function ChatOffReson(p: player, t: text) :: text:
 		send "{@tag} &cChat jest akutalnie &4&lWylaczony &7(Powod: %{Chat::Reson}%)" to {_p}
 function ChatOFFTime(p: player, c: text):
 	set {_fun::offt::*} to yaml list "CHAT-VIEW-OFF-TIME" from file "plugins/HK-Chat/config.yml"
-	set {_time} to {_c} parsed as integer
 	if {chat} is true:
+		set {time} to {_c} parsed as integer
 		replace all "(TAG)" with "%{ctag}%" in {_fun::offt::*}
 		replace all "(NICK)" with "%{_p}%" in {_fun::offt::*}
-		replace all "(TIME)" with "%{_time}%" in {_fun::offt::*}
+		replace all "(CZAS)" with "%{time}%" in {_fun::offt::*}
+		set {timerk} to true
 		set {chat} to false
 		loop {_fun::offt::*}:
 			send "%loop-value%" to all players
-		loop {_time} times:
+		loop {time} times:
 			if {chat} is true:
 				exit loop
-			if {_time} > 1:
+			if {time} > 1:
 				wait 1 second
-				remove 1 from {_time}
-				send action bar from "&1&l&k|| &3Chat zostanie &aWlaczony &3za: &6%{_time}%&3s&1&l&k|||" to {_p}
-				if {_time} = 1:
+				remove 1 from {time}
+				send action bar from "&1&l&k|| &3Chat zostanie &aWlaczony &3za: &6%{time}%&3s&1&l&k|||" to {_p}
+				if {time} = 1:
 					wait 1 second
 					ChatOn({_p})
 					stop
 	else:
 		send "&cChat jest akutalnie &4&lWylaczony" to {_p}
+function ChatOFFTimeR(p: player, t: text, c: integer):
+	if {_t} is set:
+		if {chat} is true:
+			set {chat} to false
+			set {CReson} to true
+			set {Chat::Reson} to {_t}
+			set {time} to {_c}
+			set {timer} to true
+			set {_fun::offk::*} to yaml list "CHAT-VIEW-OFF-TIME-RESON" from file "plugins/HK-Chat/config.yml"
+			replace all "(NICK)" with "%{_p}%" in {_fun::offk::*}
+			replace all "(TAG)" with "%{ctag}%" in {_fun::offk::*}
+			replace all "(POWOD)" with "%{Chat::Reson}%" in {_fun::offk::*}
+			replace all "<none>" with "Console" in {_fun::offk::*}
+			replace all "(CZAS)" with "%{time}%" in {_fun::offk::*}
+			loop {_fun::offk::*}:
+				send "%loop-value%" to all players
+			loop {time} times:
+				if {chat} is true:
+					exit loop
+				if {time} > 1:
+					wait 1 second
+					remove 1 from {time}
+					send action bar from "&1&l&k|| &3Chat zostanie &aWlaczony &3za: &6%{time}%&3s&1&l&k|||" to {_p}
+					if {time} = 1:
+						ChatOn({_p})
+						stop
 function Clear(p: player):
 	loop all players:
 		set {_fun::clear::*} to yaml list "CHAT-VIEW-CLEAR" from file "plugins/HK-Chat/config.yml"
@@ -154,7 +183,7 @@ function SlowModeToggle(p: player):
 function AutoUpDate(p: player):
 	set {_newVersion} to result of connect to "https://raw.githubusercontent.com/hiperk/Project-of-Skript/master/wersja"
 	if {update} is true:
-		if {yver} is {_newVersion}:
+		if {_newVersion} is {yver}:
 			send " " to {_p}
 			send "&2&m--------------------------------------------" to {_p}
 			send "{@tag} &8[&a&l✓&8] &7Masz aktualna wersje HK-Chat &a%{_newVersion}% &8[&a&l✓&8]" to {_p}
@@ -174,6 +203,7 @@ function Help(p: player):
 		if {chat} is true:
 			replace all "(SC)" with "&aWlaczony" in {_chelp::*}
 			replace all "(SCR)" with "" in {_chelp::*}
+			replace all "(CS)" with "" in {_chelp::*}
 		if {chat} is false:
 			if {CReson} is true:
 				replace all "(SC)" with "&cWylaczony" in {_chelp::*}
@@ -181,6 +211,10 @@ function Help(p: player):
 			else:
 				replace all "(SCR)" with "" in {_chelp::*}
 				replace all "(SC)" with "&cWylaczony" in {_chelp::*}
+			if {timer} or {timerk} is true:
+				replace all "(CS)" with "Czas: &c%{time}%" in {_chelp::*}
+			else:
+				replace all "(CS)" with "" in {_chelp::*}
 		if {slowmode} is true:
 			replace all "(SM)" with "&aWlaczony" in {_chelp::*}
 		if {slowmode} is false:
@@ -198,7 +232,7 @@ function ReloadHKChat(p: player):
 	LoadConfig()
 	OnLoad()
 	send "{@tag} &aHK-Chat zostal pomyslnie przeladowany" to {_p}
-command /chat [<text>] [<text>] [<integer>]:
+command /chat [<text>] [<text>] [<number>]:
 	aliases: hcat, czat
 	trigger:
 		if arg 1 is not set:
@@ -211,8 +245,17 @@ command /chat [<text>] [<text>] [<integer>]:
 		if arg 1 is "off":
 			if player has permission "chat.admin.off":
 				if arg 2 is set:
-					ChatOffReson(player, arg 2)
-				else:
+					if arg 2 contains "[" or "]":
+						set {_t} to arg 2
+						replace all "[" and "]" with "" in {_t}
+						ChatOFFTime(player, {_t})
+					else:
+						if arg 3 is set:
+							set {_k} to arg 3
+							ChatOFFTimeR(player, arg 2, {_k})
+						else:
+							ChatOffReson(player, arg 2)
+				if arg 2 is not set:
 					ChatOff(player)
 			else:
 				send "&8[&4&l✗&8] &cNie masz uprawnien do tej komendy &7(chat.admin.off)"
@@ -251,25 +294,20 @@ command /chat [<text>] [<text>] [<integer>]:
 					set {rainbow::%player%} to false
 					send "{@tag} &cWylaczyles teczowy nick"
 					stop
-		if arg 1 is "offt":
-			if player has permission "chat.admin.offtime":
-				if arg 2 is set:
-					if arg 2 contain "0" or "1" or "2" or "3" or "4" or "5" or "6" or "7" or "8" or "9":
-						ChatOFFTime(player, arg 2)
-					else:
-						send "&8[&4&l✗&8] &cNie mozesz wpisac tego argumentu uzyj samych liczb."
-				else:
-					send "&8[&4&l✗&8] &cUzyj: &7/chat offt &c<&7czas w sekundach&c>"
-			else:
-				send "&8[&4&l✗&8] &cNie masz uprawnien do tej komendy &7(chat.admin.offtime)"
 on chat:
 	if {chat} is false:
 		if player don't have permission "chat.say":
 			cancel event
+			if {timerk} is true:
+				send "{@tag} &cChat zostal wylaczony &7(Czas: %{time}%)"
 			if {CReson} is true:
-				send "{@tag} &cChat zostal wylaczony &7(Powód: %{Chat::Reson}%)"
-			else:
-				send "{@tag} &cChat zostal wylaczony"
+				if {timer} is true:
+					send "{@tag} &cChat zostal wylaczony &7(Czas: %{time}%) &7(Powód: %{Chat::Reson}%)"
+				else:
+					send "{@tag} &cChat zostal wylaczony &7(Powód: %{Chat::Reson}%)"
+			if {CReson} is false:
+				if {timerk} is false:
+					send "{@tag} &cChat zostal wylaczony"
 	if {chat} is true:
 		if {slowmode} is true:
 			if player don't have permission "chat.slowmode":
