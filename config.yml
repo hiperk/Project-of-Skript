@@ -1,32 +1,57 @@
+#--------------------------------------------------------
+#Hej, tu skript "HK-Chat", wykonany przez Hiperk'a ;)
+#--------------------------------------------------------
+#
+#-----------------------[Permisje]-----------------------
+#
+# 1.chat.admin.on | 2.chat.admin.off | 3.chat.admin.clear
+# 3.chat.say | 4.chat.slowmode | 5.chat.help
+# 6.chat.rainbow | 7.chat.admin.reload | 8.chat.admin.reload
+# 9.chat.admin.toggle.slowmode | 10.chat.admin.toggle.automessage
+#
+#--------------------------------------------------------
 # Version - Nie dotykac jest to ptrzebne do prawidłowego działania.
-Version: dev3
+Version: dev4
+#--------------------------------------------------------
 # AutoUpDate - Czy włączyć automatyczne sprawdzanie aktualizacji
 # True: TAK False: NIE
 # Domyślnie: True
 # Zalecane.
 AutoUpDate: true
+#--------------------------------------------------------
 # TAG - Ustawiasz tag jaki będzie wyświetlany
 # Podczas zmiennej (TAG), tylko w configu.
 TAG: '&aHK-CHAT'
+#--------------------------------------------------------
 # SLOWMODE-ENABLE - Czy właczyć slowmode na chat
 # Co robi slowmode? Zapobiega spamowi na chat
 # Gracz może wysłać 1 wiadomość co kilka sekund
 # Do ustawienia w SLOWMODE-TIME.
 # Domyślnie: True
 SLOWMODE-ENABLE: false
+#--------------------------------------------------------
 # SLOWMODE-TIME - Co jaki czas gracz może wysłać wiadomość jedna po drugiej
 # Domyślnie: 5s
 SLOWMODE-TIME: '5'
+#--------------------------------------------------------
+# Help-For-Everyone - Czy komenda /chat ma być dla wszystkich
+# False: Nie True: Tak
+# Jeśli damy false to aby uzyc komendy będzie potrzebna
+# permisja: chat.help
+# Jeśli damy na true wtedy każdy będzie mógł tego użyć
+# Bez żadnej permisj
 Help-For-Everyone: true
+#--------------------------------------------------------
 # Description-Help - Po wpisaniu komendy /chat wyświetli się poniższe komendy
 # Jeśli jest na false to uprawnienie do tej komendy to: chat.help
 # Zmienne:
 # (TAG) - Wyświetla tag który ustawiliśmy w górnej części configu.
 # (SC) - Wyświetla Status chatu czy jest Włączony/Wyłączony.
-# (SCR) - Wyświetla powód wyłącznia chatu, wyświetla się tylko gdzy jest wyłączony z powodem.
+# (SCR) - Wyświetla powód wyłącznia chatu, wyświetla się tylko gdy jest wyłączony z powodem.
 # (SM) - Wyświetla status slowmode czy jest Włączony/Wyłączony.
 # (AM) - Wyświetla status automessage czy jest Włączony/Wyłączony.
 # (VER) - Wyświetla aktualna wersje HK-Chat.
+# (CS) - Wyswietla czas do ponownego włączenia chatu
 Description-Help:
 - ' '
 - '&8&m------------------------------'
@@ -51,6 +76,7 @@ Description-Help:
 - '&7Wersja HK-Chat: &a(VER)'
 - ' '
 - '&8&m------------------------------'
+#--------------------------------------------------------
 # CHAT-VIEW-ON - Ustawienia wiadomości po wpisaniu /chat on
 # Zmienne: (TAG), (NICK) - Zamienia na nick gracza który wpisał komendę
 CHAT-VIEW-ON:
@@ -60,6 +86,7 @@ CHAT-VIEW-ON:
 - '            &7Chat zostal &2WLACZONY &7przez &a(NICK)'
 - ' '
 - ' '
+#--------------------------------------------------------
 # CHAT-VIEW-Off - Ustawienia wiadomości po wpisaniu /chat off
 # Zmienne: (TAG), (NICK) - Zamienia na nick gracza który wpisał komendę
 CHAT-VIEW-OFF:
@@ -69,6 +96,7 @@ CHAT-VIEW-OFF:
 - '            &7Chat zostal &4WYLACZONY &7przez &a(NICK)'
 - ' '
 - ' '
+#--------------------------------------------------------
 # CHAT-VIEW-OFF-RESON - Ustawienia wiadomości po wpisaniu /chat off <Powód>
 # Zmienne: (TAG), (POWOD) - Zamienia na powod jaki wpisalsmy, (NICK) - Zamienia na nick gracza który wpisał komendę
 CHAT-VIEW-OFF-RESON:
@@ -80,6 +108,7 @@ CHAT-VIEW-OFF-RESON:
 - ' '
 - ' '
 - ' '
+#--------------------------------------------------------
 # CHAT-VIEW-OFF-TIME - Ustawienia wiadomości po wpisaniu /chat off <[Czas]>
 # Zmienne: (TAG), (CZAS) - Zamienia na czas jakie wpisalismy, (NICK) - Zamienia na nick gracza który wpisał komendę
 CHAT-VIEW-OFF-TIME:
@@ -87,9 +116,10 @@ CHAT-VIEW-OFF-TIME:
 - '                             &1&l<(TAG)&1&l>'
 - ' '
 - '            &7Chat zostal &4WYLACZONY &7przez &a(NICK)'
-- '            &7Na czas: &c(CZAS)'
+- '            &7Na czas: &c(CZAS)&7s'
 - ' '
 - ' '
+#--------------------------------------------------------
 # CHAT-VIEW-OFF-TIME-RESON - Ustawienia wiadomości po wpisaniu /chat off <Powod> <Czas>
 # Zmienne: (TAG), (POWOD), (CZAS) - Zamienia na czas jakie wpisalismy, (NICK) - Zamienia na nick gracza który wpisał komendę
 CHAT-VIEW-OFF-TIME-RESON:
@@ -98,9 +128,10 @@ CHAT-VIEW-OFF-TIME-RESON:
 - ' '
 - '            &7Chat zostal &4WYLACZONY &7przez &a(NICK)'
 - '            &7Powod: &c(POWOD)'
-- '            &7Na czas: &c(CZAS)'
+- '            &7Na czas: &c(CZAS)&7s'
 - ' '
 - ' '
+#--------------------------------------------------------
 # CHAT-VIEW-CLEAR - Ustawienia wiadomości po wpisaniu /chat clear
 # Zmienne: (TAG), (NICK) - Zamienia na nick gracza który wpisał komendę
 CHAT-VIEW-CLEAR:
@@ -111,20 +142,28 @@ CHAT-VIEW-CLEAR:
 - ' '
 - ' '
 - ' '
+#--------------------------------------------------------
 # AutoMessgae-Enable - Czy automessage ma być cały czas włączony
 # True: TAK false: NIE
 # Można zmienic za pomocą komendy podczas gry.
-AutoMessgae-Enable: true
+AutoMessgae-Enable: false
+#--------------------------------------------------------
 # AutoMessgae-Time - Co ile mają nam się wyświetlać wiadomości.
 # Podajemy tylko w sekundach.
 AutoMessgae-Time: 30
+#--------------------------------------------------------
 # AutoMessgae - Tego nie dotykamy ponieważ nie będzie prawidłowo działały ogłoszenia.
 # Aby dodać kolejne ogłoszenie wpisujemy kolejne liczby np. 2,3,4,5,6,7,8,9,10 itd.
 AutoMessgae:
-  1: 
+#--------------------------------------------------------
+  1:
+  - '      &7&m---------------(&c #Info &7&m)---------------'
   - '&7Aby zmienic wiadomosc wejdz w &a/plugins/HK-Chat/config.yml'
   - '&b(NICK) &2(CZAS) &1(ONLINE) &7(TAG)'
   2:
+  - '      &7&m---------------(&3 #Info &7&m)---------------'
   - '&7Aby zmienic wiadomosc wejdz w &c/plugins/HK-Chat/config.yml'
   3:
+  - '      &7&m---------------(&b #Info &7&m)---------------'
   - '&7Aby zmienic wiadomosc wejdz w &3/plugins/HK-Chat/config.yml'
+#--------------------------------------------------------
