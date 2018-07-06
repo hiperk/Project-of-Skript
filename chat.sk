@@ -3,8 +3,6 @@ options:
 on script load:
 	OnLoad()
 	LoadConfig()
-on script unload:
-	UnLoad()
 variables:
 	{chat} = true
 	{chat::%player%} = 0
@@ -35,8 +33,6 @@ function LoadConfig():
 	set {update} to yaml value "AutoUpDate" from "plugins/HK-Chat/config.yml"
 	set {yver} to single value "Version" get of "plugins/HK-Chat/config.yml"
 	set {chelpperm} to yaml value "Help-For-Everyone" from "plugins/HK-Chat/config.yml"
-function UnLoad():
-	delete {automsg::enable}
 function ChatOn(p: player):
 	if {chat} is false:
 		set {chat} to true
@@ -100,13 +96,13 @@ function ChatOFFTime(p: player, c: text):
 			if {time} > 1:
 				wait 1 second
 				remove 1 from {time}
-				send action bar from "&1&l&k|| &3Chat zostanie &aWlaczony &3za: &6%{time}%&3s&1&l&k|||" to {_p}
+				send action bar from "&1&l&k|| &3Chat zostanie &aWlaczony &3za: &6%{time}%&3s&1&l&k ||" to {_p}
 				if {time} = 1:
 					wait 1 second
 					ChatOn({_p})
 					stop
 	else:
-		send "&cChat jest akutalnie &4&lWylaczony" to {_p}
+		send "{@tag} &cChat jest akutalnie &4&lWylaczony &7(Czas: %{time}%)" to {_p}
 function ChatOFFTimeR(p: player, t: text, c: integer):
 	if {_t} is set:
 		if {chat} is true:
@@ -129,7 +125,7 @@ function ChatOFFTimeR(p: player, t: text, c: integer):
 				if {time} > 1:
 					wait 1 second
 					remove 1 from {time}
-					send action bar from "&1&l&k|| &3Chat zostanie &aWlaczony &3za: &6%{time}%&3s&1&l&k|||" to {_p}
+					send action bar from "&1&l&k|| &3Chat zostanie &aWlaczony &3za: &6%{time}%&3s&1&l&k ||" to {_p}
 					if {time} = 1:
 						ChatOn({_p})
 						stop
