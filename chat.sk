@@ -33,6 +33,8 @@ function LoadConfig():
 	set {update} to yaml value "AutoUpDate" from "plugins/HK-Chat/config.yml"
 	set {yver} to single value "Version" get of "plugins/HK-Chat/config.yml"
 	set {chelpperm} to yaml value "Help-For-Everyone" from "plugins/HK-Chat/config.yml"
+	set {censure} to yaml value "Cenzura-Enable" from "plugins/HK-Chat/config.yml"
+	set {censure::list::*} to yaml list "Cenzura" from file "plugins/HK-Chat/config.yml"
 function ChatOn(p: player):
 	if {chat} is false:
 		set {chat} to true
@@ -290,6 +292,30 @@ command /chat [<text>] [<text>] [<number>]:
 					set {rainbow::%player%} to false
 					send "{@tag} &cWylaczyles teczowy nick"
 					stop
+		if arg 1 is "edit" or "edytuj" or "ed":
+			if player has permission "chat.admin.edit":
+				if arg 2 is set:
+					set {Chat::Reson} to coloured arg 2
+					send "{@tag} &aPomyslnie ustawiles nowy powod: &3%arg 2%"
+				else:
+					send "&cAktualny powod: &8(&3%{Chat::Reson}%&8)"
+					send "{@tag} &7Uzyj: &c/chat &7%arg 1% &7<&cZmien powod wylaczenia chatu&7>"
+			else:
+				send "&8[&4&l✗&8] &cNie masz uprawnien do tej komendy &7(chat.admin.edit)"
+		if arg 1 is "nospam" or "dis" or "vanish":
+			if player has permission "chat.nospam":
+				if {nochat::%player%} is true:
+					set {nochat::%player%} to false
+					send "{@tag} &aWlaczyles wiadomosci na chacie. Od teraz widzisz co pisza gracze"
+					stop
+				if {nochat::%player%} is false:
+					set {nochat::%player%} to true
+					send "{@tag} &cWylaczyles wiadomosci na chacie. Od teraz nie widzisz co pisza gracze"
+					stop
+				if {nochat::%player%} is not set:
+					set {nochat::%player%} to false
+			else:
+				send "&8[&4&l✗&8] &cNie masz uprawnien do tej komendy &7(chat.nospam)"
 on chat:
 	if {chat} is false:
 		if player don't have permission "chat.say":
@@ -316,7 +342,10 @@ on chat:
 				else:	 
 					if {chat::%player%} < 1:
 						set {chat::%player%} to {slowmodetime}
-						stop
+	if {nochat::%player%} is true:
+		loop all players:
+			remove loop-player from chat recipients
+			stop
 	if {rainbow::%player%} is true:
 		set {_n} to player's name
 		set {_l} to length of {_n}
@@ -334,7 +363,74 @@ on chat:
 		set {_p} to player's name
 		replace all "%{_p}%" with {_s} in {_d}
 		set player's display name to {_d}
-
+	if player has permission "chat.tecza":
+		set {_zabezpieczenie} to 0
+		while message contains "&t":
+			add 1 to {_zabezpieczenie}
+			{_zabezpieczenie} is more than 10:
+				stop
+			set {_t} to first index of "&t" in message # pozycja tagu (&t) do formatowania
+	
+			set {_tf} to subtext of message from character ({_t}) to character (length of message) # tekst do formatowania łącznie z tekstem po nim
+			replace "&t" in {_tf} with "" # usuwanie tagu z tekstu do formatowania
+	
+			set {_nc1} to (first index of "&" in {_tf} - 1) # pozycja ewentualnego nastepnego tagu
+			{_nc1} is -1:                       # gdyby nie było następnego tagu 
+				set {_nc1} to (length of {_tf}) # przypisywana jest pozycja ostatniego znaku tekstu
+			set {_nc2} to (first index of "@" in {_tf} - 1)
+			{_nc2} is -1:
+				set {_nc2} to (length of {_tf})
+			set {_nc3} to (first index of "&f[&e%rounded x location of player%&f|&e%rounded y location of player%&f|&e%rounded z location of player%&f]" in {_tf} - 1)
+			{_nc3} is -1:
+				set {_nc3} to (length of {_tf})
+			
+			{_nc1} is less than {_nc2} and {_nc3}:
+				set {_nc} to {_nc1}
+			{_nc2} is less than {_nc3} and {_nc1}:
+				set {_nc} to {_nc2}
+			{_nc3} is less than {_nc1} and {_nc2}:
+				set {_nc} to {_nc3}
+	
+			set {_tf} to subtext of {_tf} from characters 1 to ({_nc}) # usuwanie tekstu do formatowania od następnego tagu
+			
+			set {_tf::*} to {_tf} split at ""
+			set {_nr} to 1 # predefiniowanie
+			set {_w} to "" # pomocniczych zmiennych
+			loop {_tf::*}:
+				loop-value is "":
+					delete {_tf::%loop-index%}
+				loop-value is " ":
+					set {_w} to "%{_w}% "
+				loop-value is not "" or " ":
+					{_nr} is 1:
+						set {_c} to "&5"
+					{_nr} is 2:
+						set {_c} to "&1"
+					{_nr} is 3:
+						set {_c} to "&9"
+					{_nr} is 4:
+						set {_c} to "&2"
+					{_nr} is 5:
+						set {_c} to "&a"
+					{_nr} is 6:
+						set {_c} to "&e"
+					{_nr} is 7:
+						set {_c} to "&6"
+					{_nr} is 8:
+						set {_c} to "&c"
+					{_nr} is 9:
+						set {_c} to "&4"
+					{_nr} is 10:
+						set {_c} to "&3"
+					{_nr} is 11:
+						set {_c} to "&f"
+					{_nr} is 12:
+						set {_c} to "&d"
+					set {_w} to "%{_w}%%{_c}%%loop-value%"
+				add 1 to {_nr}
+				{_nr} is 13:
+					set {_nr} to 1
+			replace "&t%{_tf}%" in message with "%{_w}%&r"
 every 1 seconds:
 	if {automsg::enable} is true:
 		remove 1 from {automsg::timer}
