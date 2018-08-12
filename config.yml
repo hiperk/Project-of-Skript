@@ -11,7 +11,7 @@
 #
 #--------------------------------------------------------
 # Version - Nie dotykac jest to ptrzebne do prawidłowego działania.
-Version: dev4
+Version: dev5
 #--------------------------------------------------------
 # AutoUpDate - Czy włączyć automatyczne sprawdzanie aktualizacji
 # True: TAK False: NIE
@@ -21,7 +21,7 @@ AutoUpDate: true
 #--------------------------------------------------------
 # TAG - Ustawiasz tag jaki będzie wyświetlany
 # Podczas zmiennej (TAG), tylko w configu.
-TAG: '&aHK-CHAT'
+TAG: '&9&lHK&c&l-&3&lCHAT'
 #--------------------------------------------------------
 # SLOWMODE-ENABLE - Czy właczyć slowmode na chat
 # Co robi slowmode? Zapobiega spamowi na chat
@@ -64,6 +64,8 @@ Description-Help:
 - '&1&l» &7/chat off &c<&7Powod&c> &c<&7Czas&c> &1- &cWylacza chat na czas z powodem'
 - '&1&l» &7/chat off &c<&7[Czas]&c> &1- &cWylacza chat na czas bez powodu'
 - '&1&l» &7/chat cc &1- &cCzysci chat'
+- '&1&l» &7/chat edit &c<&7Zmiana powodu&c> &1- &cZmien powod wylaczenia chatu'
+- '&1&l» &7/chat nospam &1- &cWlacza lub wylacza widok chatu'
 - '&1&l» &7/chat rb &1- &cWlacza lub wylacza kolorowy nick'
 - '&1&l» &7/chat slowmode &1- &cWlacza lub wylacza slowmode'
 - '&1&l» &7/chat automsg &1- &cWlacza lub wylacza automessgae'
@@ -81,7 +83,7 @@ Description-Help:
 # Zmienne: (TAG), (NICK) - Zamienia na nick gracza który wpisał komendę
 CHAT-VIEW-ON:
 - ' '
-- '                             &1&l<(TAG)&1&l>'
+- '                             &8&l[(TAG)&8&l]'
 - ' '
 - '            &7Chat zostal &2WLACZONY &7przez &a(NICK)'
 - ' '
@@ -91,7 +93,7 @@ CHAT-VIEW-ON:
 # Zmienne: (TAG), (NICK) - Zamienia na nick gracza który wpisał komendę
 CHAT-VIEW-OFF:
 - ' '
-- '                             &1&l<(TAG)&1&l>'
+- '                             &8&l[(TAG)&8&l]'
 - ' '
 - '            &7Chat zostal &4WYLACZONY &7przez &a(NICK)'
 - ' '
@@ -101,10 +103,10 @@ CHAT-VIEW-OFF:
 # Zmienne: (TAG), (POWOD) - Zamienia na powod jaki wpisalsmy, (NICK) - Zamienia na nick gracza który wpisał komendę
 CHAT-VIEW-OFF-RESON:
 - ' '
-- '                             &1&l<(TAG)&1&l>'
+- '                             &8&l[(TAG)&8&l]'
 - ' '
 - '            &7Chat zostal &4WYLACZONY &7przez &a(NICK)'
-- '            &7Powod: &c(POWOD)'
+- '            &7Powod: &8( &3(POWOD) &8)'
 - ' '
 - ' '
 - ' '
@@ -113,7 +115,7 @@ CHAT-VIEW-OFF-RESON:
 # Zmienne: (TAG), (CZAS) - Zamienia na czas jakie wpisalismy, (NICK) - Zamienia na nick gracza który wpisał komendę
 CHAT-VIEW-OFF-TIME:
 - ' '
-- '                             &1&l<(TAG)&1&l>'
+- '                             &8&l[(TAG)&8&l]'
 - ' '
 - '            &7Chat zostal &4WYLACZONY &7przez &a(NICK)'
 - '            &7Na czas: &c(CZAS)&7s'
@@ -124,10 +126,10 @@ CHAT-VIEW-OFF-TIME:
 # Zmienne: (TAG), (POWOD), (CZAS) - Zamienia na czas jakie wpisalismy, (NICK) - Zamienia na nick gracza który wpisał komendę
 CHAT-VIEW-OFF-TIME-RESON:
 - ' '
-- '                             &1&l<(TAG)&1&l>'
+- '                             &8&l[(TAG)&8&l]'
 - ' '
 - '            &7Chat zostal &4WYLACZONY &7przez &a(NICK)'
-- '            &7Powod: &c(POWOD)'
+- '            &7Powod: &8( &3(POWOD) &8)'
 - '            &7Na czas: &c(CZAS)&7s'
 - ' '
 - ' '
@@ -136,7 +138,7 @@ CHAT-VIEW-OFF-TIME-RESON:
 # Zmienne: (TAG), (NICK) - Zamienia na nick gracza który wpisał komendę
 CHAT-VIEW-CLEAR:
 - ' '
-- '                             &1&l<(TAG)&1&l>'
+- '                             &8&l[(TAG)&8&l]'
 - ' '
 - '          &7Chat zostal &6WYCZYSZCZONY &7przez &a(NICK)'
 - ' '
